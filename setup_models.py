@@ -3,10 +3,10 @@ import itertools
 
 # list_nodes_layer_1 = [512, 256, 128, 64]
 list_nodes_layer_1 = [128]
-list_activation_func_1 = ["softsign", "tanh", "selu", "elu", "exponential"] #["relu", "sigmoid", "softmax", "softplus",
+list_activation_func_1 = ["relu", "sigmoid", "softmax", "softplus"]
+# list_activation_func_1 = ["softsign", "tanh", "selu", "elu", "exponential"]
 list_nodes_layer_2 = [64]
-list_activation_func_2 = ["relu", "sigmoid", "softmax",
-                          "softplus"]  # , "softsigns", "tanh", "selu", "elu", "exponential"]
+list_activation_func_2 = ["relu", "sigmoid", "softmax", "softplus"]  # , "softsigns", "tanh", "selu", "elu", "exponential"]
 list_nodes_layer_3 = []
 list_activation_func_3 = ["relu", "sigmoid", "softmax",
                           "softplus"]  # , "softsigns", "tanh", "selu", "elu", "exponential"]
@@ -24,24 +24,25 @@ custom_iterator = itertools.product(list_nodes_layer_1, list_activation_func_1, 
 
 
 counter = 48
+list_of_configs = list()
+list_of_acc = list()
 for config in custom_iterator:
     counter += 1
     print(counter, config)
     print("---------------------------------------------------------------------------------------------------")
-    createSequentialModel(config[0], config[1], config[2], config[3], config[4], config[5], config[6], config[7],
-                          "temp_model_{}".format(counter))
+    # createSequentialModel(config[0], config[1], config[2], config[3], config[4], config[5], config[6], config[7],
+    #                       "temp_model_{}".format(counter))
+    acc = checkAccurancy("temp_model_{}".format(counter), X_test, y_test, 32)
+    print("---------------------------------------------------------------------------------------------------")
+    list_of_configs.append(config)
+    list_of_acc.append(acc)
 
-
-
-
-
-# createSequentialModel(30, "relu", 8, "softmax", "categorical_crossentropy", "adam", 16, 16)
-# createSequentialModel(30, "relu", 8, "softmax", "categorical_crossentropy", "adam", 64, 16)
-# createSequentialModel(30, "relu", 8, "softmax", "categorical_crossentropy", "SGD", 64, 16)
-# createSequentialModel(30, "relu", 8, "softmax", "mean_squared_error", "adam", 64, 16)
-# createSequentialModel(30, "relu", 8, "relu", "mean_squared_error", "adam", 64, 16)
-# createSequentialModel(30, "relu", 8, "softmax", "mean_squared_error", "SGD", 64, 16)
-# createSequentialModel(30, "relu", 8, "softmax", "categorical_crossentropy", "SGD", 16, 16)
-# createSequentialModel(30, "relu", 8, "softmax", "mean_squared_error", "adam", 16, 16)
-# createSequentialModel(30, "relu", 8, "relu", "mean_squared_error", "adam", 16, 16)
-# createSequentialModel(30, "relu", 8, "softmax", "mean_squared_error", "SGD", 16, 16)
+counter = len(list_of_configs)
+starting = 109
+while counter > 0:
+    starting -= 1
+    print(starting)
+    counter -= 1
+    print(list_of_configs[counter])
+    print(list_of_acc[counter])
+    print("---------------------------------------------------")

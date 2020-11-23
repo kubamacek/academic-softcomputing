@@ -15,10 +15,16 @@ def save_model(model, model_name_to_save):
     model.save(os.path.join('models/', model_name_to_save))
 
 
-def load_model_from_file(saved_model_name):
+def show_model_summary(saved_model_name):
     model = load_model(os.path.join('models/', saved_model_name))
     print("loaded model:", saved_model_name)
     model.summary()
+
+
+def load_model_from_file(saved_model_name):
+    model = load_model(os.path.join('models/', saved_model_name))
+    # print("loaded model:", saved_model_name)
+    # model.summary()
     return model
 
 
@@ -92,19 +98,16 @@ def test_model(model_name_to_test):
         acc = sklearn.metrics.accuracy_score(sample_labels[sample_id - 1], predictions[0].round())
         if acc == 1.0:
             success += 1
-    accuracy = (success/len(sample_data))*100
-    print(model_name_to_test, "acc: ", accuracy, "tests succeeded/failed: {}/{}".format(success, len(sample_data)-success))
+    accuracy = (success / len(sample_data)) * 100
+    print(model_name_to_test, "acc: ", accuracy,
+          "tests succeeded/failed: {}/{}".format(success, len(sample_data) - success))
 
 
-# def createSequentialModel_core():
-#     model = Sequential()
-#     model.add(Dense(30, activation='relu'))
-#     model.add(Flatten())
-#     model.add(Dense(8))
-#     model.add(Dense(get_number_of_classes('data'), activation='softmax'))
-#     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-#     history = model.fit(X_train, y_train, batch_size=32, epochs=16, validation_data=(X_test, y_test))
-#     model.summary()
+def checkAccurancy(model_name_to_verify, example_data, example_labels, batch_size):
+    model = load_model_from_file(model_name_to_verify)
+    results = model.evaluate(example_data, example_labels, batch_size=batch_size)
+    print(model_name_to_verify, "test_loss, test acc:", results)
+    return results
 
 
 def createSequentialModel(nodes_layer_1, activation_func_1, nodes_layer_2, activation_func_2, loss_function, optimizer,
@@ -119,35 +122,83 @@ def createSequentialModel(nodes_layer_1, activation_func_1, nodes_layer_2, activ
     model.summary()
     save_model(model, model_name)
 
-def createSequentialModel_enhanced(nodes_layer_1, activation_func_1, nodes_layer_2, activation_func_2, nodes_layer_3,
-                                   activation_func_3, loss_function, optimizer, batch_size, epochs, model_name):
-    model = Sequential()
-    model.add(Dense(nodes_layer_1, activation=activation_func_1))
-    model.add(Flatten())
-    model.add(Dense(nodes_layer_2))
-    model.add(Dense(nodes_layer_3), activation=activation_func_2)
-    model.add(Dense(get_number_of_classes('data'), activation=activation_func_3))
-    model.compile(loss=loss_function, optimizer=optimizer, metrics=['accuracy'])
-    history = model.fit(X_train, y_train, batch_size=batch_size, epochs=epochs, validation_data=(X_test, y_test))
-    model.summary()
-    save_model(model, model_name)
+
+# def createSequentialModel_enhanced(nodes_layer_1, activation_func_1, nodes_layer_2, activation_func_2, nodes_layer_3,
+#                                    activation_func_3, loss_function, optimizer, batch_size, epochs, model_name):
+#     model = Sequential()
+#     model.add(Dense(nodes_layer_1, activation=activation_func_1))
+#     model.add(Flatten())
+#     model.add(Dense(nodes_layer_2))
+#     model.add(Dense(nodes_layer_3), activation=activation_func_2)
+#     model.add(Dense(get_number_of_classes('data'), activation=activation_func_3))
+#     model.compile(loss=loss_function, optimizer=optimizer, metrics=['accuracy'])
+#     history = model.fit(X_train, y_train, batch_size=batch_size, epochs=epochs, validation_data=(X_test, y_test))
+#     model.summary()
+#     save_model(model, model_name)
+
+# def createSequentialModel_core():
+#     model = Sequential()
+#     model.add(Dense(30, activation='relu'))
+#     model.add(Flatten())
+#     model.add(Dense(8))
+#     model.add(Dense(get_number_of_classes('data'), activation='softmax'))
+#     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+#     history = model.fit(X_train, y_train, batch_size=32, epochs=16, validation_data=(X_test, y_test))
+#     model.summary()
 
 
-
-def checkAccurancy(model_name_to_verify, example_data, example_labels, batch_size):
-    model = load_model_from_file(model_name_to_verify)
-    results = model.evaluate(example_data, example_labels, batch_size=batch_size)
-    print(model_name_to_verify, "test_loss, test acc:", results)
-
-
-# createSequentialModel_core()
 X_train, X_test, y_train, y_test = prepare_train_data('data')
+# createSequentialModel_core()
 
 # createSequentialModel(128, "relu", 64, "softmax", "categorical_crossentropy", "adam", 32, 30, "best_model")       96-97% acc
+show_model_summary("best_model")
 checkAccurancy("best_model", X_test, y_test, 32)
 test_model("best_model")
+print("------------------------------------------------------------------------------------\n\n")
 
+# createSequentialModel(128, "sigmoid", 64, "sigmoid", "categorical_crossentropy", "adam", 32, 30, "best_model_2")
+show_model_summary("best_model_2")
+checkAccurancy("best_model_2", X_test, y_test, 32)
+test_model("best_model_2")
+print("------------------------------------------------------------------------------------\n\n")
 
+# createSequentialModel(256, "sigmoid", 64, "sigmoid", "categorical_crossentropy", "adam", 32, 30, "best_model_3")
+show_model_summary("best_model_3")
+checkAccurancy("best_model_3", X_test, y_test, 32)
+test_model("best_model_3")
+print("------------------------------------------------------------------------------------\n\n")
+#
+# createSequentialModel(128, "sigmoid", 64, "softplus", "categorical_crossentropy", "adam", 32, 30, "best_model_4")
+show_model_summary("best_model_4")
+checkAccurancy("best_model_4", X_test, y_test, 32)
+test_model("best_model_4")
+print("------------------------------------------------------------------------------------\n\n")
+#
+# createSequentialModel(256, "sigmoid", 64, "softplus", "categorical_crossentropy", "adam", 32, 30, "best_model_5")
+show_model_summary("best_model_5")
+checkAccurancy("best_model_5", X_test, y_test, 32)
+test_model("best_model_5")
+print("------------------------------------------------------------------------------------\n\n")
 
+# createSequentialModel(128, "softsign", 64, "softplus", "categorical_crossentropy", "RMSprop", 32, 30, "best_model_6")
+# checkAccurancy("best_model_6", X_test, y_test, 32)
+# test_model("best_model_6")
 
-
+# createSequentialModel(256, "softsign", 64, "softplus", "categorical_crossentropy", "RMSprop", 32, 30, "best_model_7")
+# show_model_summary("best_model_7")
+# checkAccurancy("best_model_7", X_test, y_test, 32)
+# test_model("best_model_7")
+# print("------------------------------------------------------------------------------------")
+#
+# createSequentialModel(128, "softsign", 64, "softmax", "categorical_crossentropy", "adam", 32, 30, "best_model_8")
+# show_model_summary("best_model_8")
+# checkAccurancy("best_model_8", X_test, y_test, 32)
+# test_model("best_model_8")
+# print("------------------------------------------------------------------------------------")
+#
+# createSequentialModel(256, "softsign", 64, "softmax", "categorical_crossentropy", "adam", 32, 30, "best_model_9")
+# show_model_summary("best_model_9")
+# checkAccurancy("best_model_9", X_test, y_test, 32)
+# test_model("best_model_9")
+# print("------------------------------------------------------------------------------------")
+#
